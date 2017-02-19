@@ -1,0 +1,23 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{46D457F2-F199-FC0D-F7CF-148D0F33E252}") = "mama-game", "Assembly-CSharp.csproj", "{1594DCAE-6C17-CEFC-F3CE-2631CEC6934E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1594DCAE-6C17-CEFC-F3CE-2631CEC6934E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1594DCAE-6C17-CEFC-F3CE-2631CEC6934E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1594DCAE-6C17-CEFC-F3CE-2631CEC6934E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1594DCAE-6C17-CEFC-F3CE-2631CEC6934E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
