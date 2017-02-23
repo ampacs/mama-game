@@ -14,15 +14,20 @@ public class Controller2D : MonoBehaviour {
     //Current width of skin
     const float skinWidth = .015f;
     // Create a collider
-    BoxCollider2D collider;
+    public BoxCollider2D colliderControl;
     RaycastOrigins raycastOrigins;
     public CollisionInfo collisions;
 
-	void Start () {
+	void Awake () {
         //init collider from current controller
-        collider = this.GetComponent<BoxCollider2D>();
+        colliderControl = this.GetComponent<BoxCollider2D>();
         //determine spacing for ray casting
         calculateRaySpacing();
+    }
+
+    public void Start()
+    {
+
     }
     void Update()
     {
@@ -137,7 +142,7 @@ public class Controller2D : MonoBehaviour {
     void calculateRaySpacing()
     {
         //Get bounds, and shrink the skin
-        Bounds bounds = collider.bounds;
+        Bounds bounds = colliderControl.bounds;
         bounds.Expand(skinWidth * -2);
         //Make a restriction so that raycounts are between 2 and max
         horizontalRayCount = Mathf.Clamp(horizontalRayCount, 2, int.MaxValue);
@@ -150,7 +155,7 @@ public class Controller2D : MonoBehaviour {
     void updateRaycastOrigins()
     {
         //Get bounds of collider
-        Bounds bounds = collider.bounds;
+        Bounds bounds = colliderControl.bounds;
         //shrink the skin by 0.2
         bounds.Expand(skinWidth * -2);
 

@@ -13,6 +13,7 @@ public class Player : MonoBehaviour {
     public float accelerationTimeGrounded = .1f;
 
     public float moveSpeed = 6;
+    float initSpeed;
     //Declares velocity and gravity
     float gravity;
     float jumpVelocity;
@@ -27,6 +28,7 @@ public class Player : MonoBehaviour {
        
         //Init player controller from current player
         controller = this.GetComponent<Controller2D>();
+        initSpeed = moveSpeed;
 		
 	}
 	
@@ -41,13 +43,23 @@ public class Player : MonoBehaviour {
         if (controller.collisions.above || controller.collisions.below)
         {
             velocity.y = 0;
+            moveSpeed = initSpeed;
         }
         //Get input vector from left/right buttons
         Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         // Jump if on ground TODO: Jump zone (not nessasarily on ground)
         if (Input.GetKeyDown(KeyCode.Space) && controller.collisions.below)
         {
+            moveSpeed = moveSpeed + 4;
             velocity.y = jumpVelocity;
+        }
+        else if (Input.GetKeyUp(KeyCode.Space) && !controller.collisions.below)
+        {
+            if (velocity.y > 0)
+            {
+                velocity.y = 0;
+            }
+            moveSpeed = initSpeed;
         }
         //Dampen the change in x so it's smoother
         //TODO: Bias in change between switching directions
