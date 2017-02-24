@@ -28,7 +28,12 @@ public class CollisionController : MonoBehaviour {
     RaycastOrigins raycastOrigins;
     public CollisionInfo collisions;
 
-	void Start () {
+    void Start()
+    {
+
+    }
+
+	void Awake () {
         //init collider from current controller
         boxCollider = this.GetComponent<BoxCollider2D>();
         collisions.Init(horizontalRayCount);
