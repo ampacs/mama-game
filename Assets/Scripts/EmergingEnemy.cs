@@ -27,9 +27,9 @@ public class EmergingEnemy : MonoBehaviour {
 		coll = GetComponent<BoxCollider2D> ();
 
 		if (spawnDirection == "up" || spawnDirection == "down")
-			transform.localScale = new Vector2(targetScale, 0.0f);
+			transform.localScale = new Vector3(targetScale, targetScale, 1);
 		else if (spawnDirection == "left" || spawnDirection == "right")
-			transform.localScale = new Vector2(0.0f, targetScale);
+			transform.localScale = new Vector3(targetScale, targetScale, 1);
 		else
 			Debug.Log ("INVALID SPAWN DIRECTION");
 
@@ -37,7 +37,6 @@ public class EmergingEnemy : MonoBehaviour {
             coll.isTrigger = true;
 
 		spawnTime = Time.time;
-		
 	}
 	
 	// Update is called once per frame
@@ -58,10 +57,15 @@ public class EmergingEnemy : MonoBehaviour {
 			} else {
                 if (rb.velocity.y < .05 && Mathf.Abs(diff.y) < 1)
                 {
-                    if (pcPos.x < pos.x)
+                    if (pcPos.x < pos.x) {
+                        if (transform.localScale.x < 0)
+                            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                         rb.AddForce(new Vector2(-moveSpeed / Time.fixedDeltaTime, 0));
-                    else if (pos.x < pcPos.x)
+                    } else if (pos.x < pcPos.x) {
+                        if (transform.localScale.x > 0)
+                            transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                         rb.AddForce(new Vector2(moveSpeed / Time.fixedDeltaTime, 0));
+                    }
                     if (rb.velocity.x > maxSpeed)
                         rb.velocity = new Vector2(maxSpeed, rb.velocity.y);
                     else if (rb.velocity.x < -maxSpeed)
@@ -81,9 +85,9 @@ public class EmergingEnemy : MonoBehaviour {
 			}
 
 			if (spawnDirection == "up" || spawnDirection == "down")
-				transform.localScale = new Vector2(targetScale, currScale);
+				transform.localScale = new Vector3(targetScale, currScale, 1);
 			else if (spawnDirection == "left" || spawnDirection == "right")
-				transform.localScale = new Vector2(currScale, targetScale);
+				transform.localScale = new Vector3(currScale, targetScale, 1);
 
 		}
 		

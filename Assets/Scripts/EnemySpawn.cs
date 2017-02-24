@@ -45,9 +45,10 @@ public class EnemySpawn : MonoBehaviour {
 				enemyScript.spawnDirection = spawnDirection;
 				enemyScript.moveSpeed = enemySpeed;
                 enemyScript.maxSpeed = enemyMaxSpeed;
-				enemyScript.targetScale = enemySize;
+				//enemyScript.targetScale = enemySize;
 				enemyScript.targetGravity = enemyGravity;
 				enemyScript.canFly = enemyCanfly;
+                enemyScript.spawnSpeed = spawnTime;
 				alreadySpawned = true;
 
 			}
