@@ -16,24 +16,15 @@ public class CollisionController : MonoBehaviour {
     float horizontalRaySpacing;
     float verticalRaySpacing;
 
-    //keep track of current movement
-    public float dirX;
-    public float dirY;
-
     //Current width of skin
     const float skinWidth = .015f;
 
     // Create a collider
-    public BoxCollider2D boxCollider;
+    BoxCollider2D boxCollider;
     RaycastOrigins raycastOrigins;
     public CollisionInfo collisions;
 
-    void Start()
-    {
-
-    }
-
-	void Awake () {
+	void Start () {
         //init collider from current controller
         boxCollider = this.GetComponent<BoxCollider2D>();
         collisions.Init(horizontalRayCount);
@@ -59,7 +50,6 @@ public class CollisionController : MonoBehaviour {
     {
         //Direction of velocity
         float directionY = Mathf.Sign(velocity.y);
-        float dirY = directionY;
         //Length of ray (plus skin), since inset in skin
         float rayLength = Mathf.Abs(velocity.y) + skinWidth;
         //Draw all of the vertical rays in debug mode
@@ -102,7 +92,6 @@ public class CollisionController : MonoBehaviour {
     {
         //Direction of velocity
         float directionX = Mathf.Sign(velocity.x);
-        float dirX = directionX;
         //Length of ray (plus skin), since inset in skin
         float rayLength = Mathf.Abs(velocity.x) + skinWidth;
         //Draw all of the vertical rays in debug mode
