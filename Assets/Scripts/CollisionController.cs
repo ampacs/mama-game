@@ -12,6 +12,9 @@ public class CollisionController : MonoBehaviour {
     public int horizontalRayCount = 4;
     public int verticalRayCount = 4;
 
+    //change jump graces/clamberable conditions
+    public float clamberHeightMod = 1.25f;
+
     //Variables for calculating spacing for rays
     float horizontalRaySpacing;
     float verticalRaySpacing;
@@ -27,6 +30,9 @@ public class CollisionController : MonoBehaviour {
     public BoxCollider2D boxCollider;
     RaycastOrigins raycastOrigins;
     public CollisionInfo collisions;
+    public CollisionInfo clamberCollisions;
+
+    Vector2 zeroVector = new Vector2(0, 0);
 
     void Start()
     {
@@ -37,7 +43,7 @@ public class CollisionController : MonoBehaviour {
 	void Awake () {
         //init collider from current controller
         boxCollider = this.GetComponent<BoxCollider2D>();
-        collisions.Init(horizontalRayCount);
+        //collisions.Init(horizontalRayCount);
         //determine spacing for ray casting
         CalculateRaySpacing();
     }
@@ -46,17 +52,24 @@ public class CollisionController : MonoBehaviour {
         collisions.Reset();
         //update raycast positions before moving
         UpdateRaycastOrigins();
-        //Only check if moving in direction
+
+        //Get bounds, and shrink the skin
+        Bounds bounds = boxCollider.bounds;
+        bounds.Expand(skinWidth * -2);
+        //determine up offset to see if you can clamber over
+        Vector2 ClamberOffset = new Vector2(0, bounds.size.y * clamberHeightMod);
+        clamberCollisions = HorizontalCollisions(ref velocity, ClamberOffset, clamberCollisions);
+        
         //Check Horizontal Collisions
-        HorizontalCollisions(ref velocity);
+        collisions = HorizontalCollisions(ref velocity, zeroVector, collisions);
         //Check for collisions on velocity
-        VerticalCollisions(ref velocity);
+        collisions = VerticalCollisions(ref velocity, 0, collisions);
         //Translate the object according to velocity
         return velocity;
     }
 
     //Handles vertical collisions
-    void VerticalCollisions(ref Vector3 velocity)
+    CollisionInfo VerticalCollisions(ref Vector3 velocity, float offset, CollisionInfo col)
     {
         //Direction of velocity
         float directionY = Mathf.Sign(velocity.y);
@@ -74,32 +87,74 @@ public class CollisionController : MonoBehaviour {
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up * directionY, rayLength, collisionMask);
             //Draw ray in debug mode
             Debug.DrawRay(rayOrigin,  Vector2.up * directionY * rayLength, Color.red);
+           // if (i == 0)
+             //   print(velocity.y);
             //act according to collision if hit
             if (hit)
             {
                 //Bounce off, making sure to count for ignored skin
                 velocity.y = (hit.distance - skinWidth) * directionY;
                 //Set to hit distance, to prevent clipping on edges
-                rayLength = hit.distance;
-
+                
+                col.below = directionY == -1;
+                col.above = directionY == 1;
+                /*
                 if (directionY == -1)
                 {
+                    //hit bottom
                     collisions.below[i] = true;
                     collisions.above[i] = false;
                 }
                 else if (directionY == 1)
                 {
+                    //hit top
                     collisions.above[i] = true;
                     collisions.below[i] = false;
                 }
+                */
+                rayLength = hit.distance;
             }
         }
+        return col;
 
     }
 
+    void ClamberCollisions(ref Vector3 Velocity)
+    {
+    }
+
+    public void Move(Vector3 velocity)
+    {
+        UpdateRaycastOrigins();
+        collisions.Reset();
+        clamberCollisions.Reset();
+        //Determine offset for clambering
+
+        //Get bounds, and shrink the skin
+        Bounds bounds = boxCollider.bounds;
+        bounds.Expand(skinWidth * -2);
+        //determine up offset to see if you can clamber over
+        Vector2 ClamberOffset = new Vector2(0, bounds.size.y * clamberHeightMod);
+
+        //If you've moved in x direction, check collisions horizontally
+        if (velocity.x != 0)
+        {
+            //don't pass clamber the real velocity since don't want it to be modified
+            Vector3 velocityCopy = velocity;
+            collisions = HorizontalCollisions(ref velocity, zeroVector, collisions);
+            //check for clambering conditions (Considered a correct clamber if you can move up a certain distance so that there's no left collision but normally is left collision)
+            clamberCollisions = HorizontalCollisions(ref velocityCopy, ClamberOffset, clamberCollisions);
+        }
+        if (velocity.y != 0)
+        {
+            collisions = VerticalCollisions(ref velocity, 0, collisions);
+        }
+
+        transform.Translate(velocity);
+    }
 
     //Handles horizontal collisions
-    void HorizontalCollisions(ref Vector3 velocity)
+    CollisionInfo HorizontalCollisions(ref Vector3 velocity, Vector2 offset, CollisionInfo col)
     {
         //Direction of velocity
         float directionX = Mathf.Sign(velocity.x);
@@ -110,13 +165,16 @@ public class CollisionController : MonoBehaviour {
         for (int i = 0; i < horizontalRayCount; i++)
         {
             //If you're moving left, start with bottom left, else bottom right
-            Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.topLeft : raycastOrigins.topRight;
+            Vector2 rayOrigin = (directionX == -1) ? (raycastOrigins.topLeft + offset) : (raycastOrigins.topRight + offset);
             //Sets offsets for each ray
             rayOrigin += Vector2.down * horizontalRaySpacing * i;
             //Detect a hit from each ray cast
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
             //Draw ray in debug mode
-            Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red);
+            if (offset != zeroVector)
+                Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red);
+            else
+                Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.blue);
             //act according to collision if hit
             if (hit)
             {
@@ -125,19 +183,25 @@ public class CollisionController : MonoBehaviour {
                 //Set to hit distance, to prevent clipping on edges
                 rayLength = hit.distance;
                 //If you were going in X direction, you collided with X side
+                col.left = directionX == -1;
+                col.right = directionX == 1;
+                /*
                 if (directionX == -1)
                 {
+                    //hit left side
                     collisions.left[i] = true;
                     collisions.right[i] = false;
                 }
                 else if (directionX == 1)
                 {
+                    //hit right side
                     collisions.right[i] = true;
                     collisions.left[i] = false;
                 }
+                */
             }
         }
-
+        return col;
     }
 
     //Ray update functions
@@ -176,7 +240,20 @@ public class CollisionController : MonoBehaviour {
 
     }
 
-    public struct CollisionInfo {
+    public struct CollisionInfo
+    {
+        public bool above, below;
+        public bool left, right;
+
+        public void Reset()
+        {
+            above = below = false;
+            left = right = false;
+        }
+    }
+
+
+    public struct CollisionInfoArray {
 
         public bool[] above, below,
                       left,  right;
@@ -198,6 +275,7 @@ public class CollisionController : MonoBehaviour {
         }
 
         public bool IsColliding() {
+            
             bool[][] locations = { above, below, left, right };
             for (int i = 0; i < locations.Length; i++)
                 for (int j = 0; j < locations[i].Length; j++) {
@@ -208,12 +286,14 @@ public class CollisionController : MonoBehaviour {
         }
 
         public bool IsColliding(int location) {
+            
             bool[][] locations = { above, below, left, right };
             for (int i = 0; i < locations[location].Length; i++) {
                 if (locations[location][i])
                     return true;
             }
             return false;
+            
         }
 
         public bool[][] GetAllCollisionLocations() {
