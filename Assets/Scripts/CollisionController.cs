@@ -12,7 +12,7 @@ public class CollisionController : MonoBehaviour {
     public int horizontalRayCount = 4;
     public int verticalRayCount = 4;
 
-    //change jump graces/clamberable conditions
+    //change jump graces/clamberable conditions, higher number = easier clambers (I recommend you don't change this)
     public float clamberHeightMod = 1.25f;
 
     //Variables for calculating spacing for rays
@@ -32,7 +32,12 @@ public class CollisionController : MonoBehaviour {
     public CollisionInfo collisions;
     public CollisionInfo clamberCollisions;
 
-    Vector2 zeroVector = new Vector2(0, 0);
+    CollisionInfo col;
+
+    Vector3 zeroVector = new Vector3(0, 0, 0);
+
+    float HorzMid;
+    float VertMid;
 
     void Start()
     {
@@ -41,11 +46,75 @@ public class CollisionController : MonoBehaviour {
 
 
 	void Awake () {
+        resized();
+    }
+
+    public void resized()
+    {
         //init collider from current controller
         boxCollider = this.GetComponent<BoxCollider2D>();
         //collisions.Init(horizontalRayCount);
         //determine spacing for ray casting
         CalculateRaySpacing();
+    }
+
+    public bool resize(Vector2 size, Vector2 originalSize)
+    {
+        col.Reset();
+        Bounds bounds = boxCollider.bounds;
+        //bounds.Expand(skinWidth * -2);
+        HorzMid = bounds.size.x / 2;
+        VertMid = bounds.size.y;
+
+        Vector3 oldSize = size;
+        size.x = -HorzMid + size.x / 2;
+        size.y = -VertMid + size.y;
+        if (size.x < 0)
+        {
+            size.x = 0;
+        }
+        if (size.y < 0)
+        {
+            size.y = 0;
+        }
+        Vector3 newSize = (Vector3)size;
+        Vector3 negSize = Vector3.left * newSize.x + (Vector3.down * newSize.y);
+        
+        
+        
+        col = VerticalCollisions(ref newSize, 0, col);
+        if (checkForCollisions(col))
+        {
+            return true;
+        }
+        
+        //no point in checking underneath since you'll only have problems above you
+       // col = VerticalCollisions(ref negSize, 0, col);
+        //if (checkForCollisions(col))
+        //{
+         //   return true;
+        //}
+        
+        
+        
+        
+        
+        
+        col = HorizontalCollisions(ref newSize, new Vector2(0, 0), col);
+        if (checkForCollisions(col))
+        {
+            return true;
+        }
+        col = HorizontalCollisions(ref negSize, new Vector2(0, 0), col);
+        if (checkForCollisions(col))
+        {
+            return true;
+        }
+        transform.localScale = oldSize;
+        resized();
+        return false;
+        
+
     }
 
     public Vector3 UpdateRaytracers(Vector3 velocity) {
@@ -171,7 +240,7 @@ public class CollisionController : MonoBehaviour {
             //Detect a hit from each ray cast
             RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, rayLength, collisionMask);
             //Draw ray in debug mode
-            if (offset != zeroVector)
+            if (offset != (Vector2)zeroVector)
                 Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.red);
             else
                 Debug.DrawRay(rayOrigin, Vector2.right * directionX * rayLength, Color.blue);
@@ -230,6 +299,11 @@ public class CollisionController : MonoBehaviour {
         raycastOrigins.bottomRight = new Vector2(bounds.max.x, bounds.min.y);
         raycastOrigins.topLeft = new Vector2(bounds.min.x, bounds.max.y);
         raycastOrigins.topRight = new Vector2(bounds.max.x, bounds.max.y);
+    }
+
+    bool checkForCollisions(CollisionInfo col)
+    {
+        return (col.above || col.below || col.right || col.left);
     }
 	
     //Define struct for different origins
