@@ -41,21 +41,11 @@ public class CameraController: MonoBehaviour {
     //use vector to represent size of focus area
     public Vector2 focusAreaSize;
     // hover camera over player
-    public float verticalOffset = 0;
+    public float verticalOffset;
     // different camera smoothing/looking ahead variables
-    //Distance camera will look ahead
-    public float lookAheadDstX = 2f;
-    //Lower numbers = quicker camera changes, higher = slowly smoother changes
-    public float lookSmoothTimeX = .5f;
-    //Similar to above variables but in different directions
-    public float lookAheadDstY = 2f;
-    public float lookSmoothTimeY = .5f;
-    //Offset is the amount the player can move the camera by pressing the up or down key
-    public float playerControlledOffset = 3;
-    //This controls speed that player-controlled camera moves at, lower seconds recommend for more responsiveness
-    public float playerControlledCameraSpeed = 0.25f;
-
-    float speed;
+    public float lookAheadDstX;
+    public float lookSmoothTimeX;
+    public float verticalSmoothTime;
     // create a new focusArea struct
     FocusArea focusArea;
 
@@ -64,20 +54,9 @@ public class CameraController: MonoBehaviour {
     float targetLookAheadX;
     float lookAheadDirX;
     float smoothLookVelocityX;
-    float smoothLookVelocityY;
-    float lookAheadDirY;
-    float targetLookAheadY;
-    float currentLookAheadY;
-
-    bool notMoving;
-
-
-    float verticalOffsetDir;
-    float input;
+    float smoothVelocityY;
 
     bool lookAheadStopped;
-    bool lookAheadYStopped;
-
 
 
     void Start()
@@ -88,7 +67,6 @@ public class CameraController: MonoBehaviour {
     // update after player moves
     void LateUpdate()
     {
-       
         focusArea.Update(target.boxCollider.bounds);
 
         //Put camera at focusPosition
@@ -114,62 +92,15 @@ public class CameraController: MonoBehaviour {
                 }
             }
         }
-        //handle similar kind of movement for y direction
-        if (focusArea.velocity.y != 0)
-        {
-            notMoving = false;
-            lookAheadDirY = Mathf.Sign(focusArea.velocity.y);
-            if (Mathf.Sign(target.dirY) == Mathf.Sign(focusArea.velocity.x) && target.dirY != 0)
-            {
-                lookAheadYStopped = false;
-                targetLookAheadY = lookAheadDirY * lookAheadDstY;
-            }
-            else
-            {
-                if (!lookAheadYStopped)
-                {
-                    lookAheadYStopped = true;
-                    targetLookAheadY = (currentLookAheadY + (lookAheadDirY * lookAheadDstY - currentLookAheadY)) / 4;
-                }
-
-            }
-        }
-        //prevent you from looking up/down when static
-        else if (focusArea.velocity.y == 0)
-        {
-            notMoving = true;
-        }
 
         //smooth Y
-        //Only move camera when player camera isnt occuring
-        input = Input.GetAxisRaw("Vertical");
-        targetLookAheadY = 0;
-        if (input == 0)
-        {
-            if (!notMoving)
-            {
-                targetLookAheadY = lookAheadDirY * lookAheadDstY;
-            }
-            speed = lookSmoothTimeY;
-            //move camera faster when moving down
-            if (targetLookAheadY < 0)
-            {
-                speed = speed / 2;
-            }
-        }
-        //dont let the player control camera when moving
-        else if (notMoving)
-        {
-            targetLookAheadY = playerControlledOffset * Mathf.Sign(input);
-            speed = playerControlledCameraSpeed;
-        }
+        focusPosition.y = Mathf.SmoothDamp(transform.position.y, focusPosition.y, ref smoothVelocityY, verticalSmoothTime);
+
         //change look ahead depending on distance and dir
         targetLookAheadX = lookAheadDirX * lookAheadDstX;
         //smooth change
         currentLookAheadX = Mathf.SmoothDamp(currentLookAheadX, targetLookAheadX, ref smoothLookVelocityX, lookSmoothTimeX);
-        currentLookAheadY = Mathf.SmoothDamp(currentLookAheadY, targetLookAheadY, ref smoothLookVelocityY, speed);
-        
-        focusPosition += Vector2.up * currentLookAheadY;
+
         focusPosition += Vector2.right * currentLookAheadX;
         //make sure camera is in front
         transform.position = (Vector3)focusPosition + Vector3.forward * -10;
