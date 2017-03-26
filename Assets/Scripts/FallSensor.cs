@@ -15,6 +15,7 @@ public class FallSensor : MonoBehaviour {
         {
             noise.Play();
             NoiseMade = true;
+            Debug.Log("triggered");
         }
     }
 }

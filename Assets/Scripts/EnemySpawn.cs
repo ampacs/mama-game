@@ -14,7 +14,8 @@ public class EnemySpawn : MonoBehaviour {
 	public string spawnDirection;
 	public GameObject enemy;
 
-	private bool alreadySpawned;
+	[HideInInspector] public bool alreadySpawned;
+    private bool doneSpawning;
 	public float spawnTime;
     public Vector2 spawnPoint;
 
@@ -23,26 +24,29 @@ public class EnemySpawn : MonoBehaviour {
 	public float enemySize;
 	public float enemyGravity;
 	public bool enemyCanfly;
+    public bool startFacingRight;
 
 	// Use this for initialization
 	void Start () {
         spawnPoint = new Vector2(transform.position.x + spawnPoint.x, transform.position.y + spawnPoint.y);
+        doneSpawning = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
 	}
 
-	void OnTriggerEnter2D (Collider2D other) {
+	void OnTriggerStay2D (Collider2D other) {
 
-		if (other.tag == "Player") {
+		if (other.tag == "Player" ) {
 
-			if (!spawnOnce || !alreadySpawned) {
+			if (!alreadySpawned && !doneSpawning) {
 				
 				GameObject spawnedEnemy = Instantiate (enemy, spawnPoint, Quaternion.identity);
 				EmergingEnemy enemyScript = spawnedEnemy.GetComponent<EmergingEnemy> ();
-				enemyScript.spawnDirection = spawnDirection;
+                enemyScript.spawner = GetComponent<EnemySpawn>();
+                enemyScript.startFacingRight = startFacingRight;
+                enemyScript.spawnDirection = spawnDirection;
 				enemyScript.moveSpeed = enemySpeed;
                 enemyScript.maxSpeed = enemyMaxSpeed;
 				//enemyScript.targetScale = enemySize;
@@ -50,6 +54,8 @@ public class EnemySpawn : MonoBehaviour {
 				enemyScript.canFly = enemyCanfly;
                 enemyScript.spawnSpeed = spawnTime;
 				alreadySpawned = true;
+                if (spawnOnce)
+                    doneSpawning = true;
 
 			}
 
