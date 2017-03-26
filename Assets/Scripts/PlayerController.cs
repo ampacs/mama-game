@@ -218,24 +218,19 @@ public class PlayerController : MonoBehaviour
     public float jumpHeight = 4;
     public float timeToJumpApex = .4f;
     //Time for accelerations
+    public float acceleration = 1;
     public float accelerationTimeAirborne = .2f;
     public float accelerationTimeGrounded = .1f;
 
     public float gravityMultiplierAscending = 1f;
     public float gravityMultiplierDescending = 1.5f;
 
-    public float reactivityPercent = 0.5f;
-
     public float maximumMovementSpeed = 6;
-    public float maximumAirMovementSpeed = 12;
     public float unPressedVelocity = 2f;
     public Vector3 crouchScale,
                    normalScale;
 
     bool jumpGrace;
-    bool recordedJump;
-    float lastAttemptedJumpTime = 0f;
-    public float recordJumpTime = .2f;
     public float jumpCollisionGrace = .2f;
     float lastTimeCollided;
     //Declares velocity and gravity
@@ -283,7 +278,6 @@ public class PlayerController : MonoBehaviour
         gravity = -(2 * jumpHeight) / Mathf.Pow(timeToJumpApex, 2);
         jumpVelocity = Mathf.Abs(gravity) * timeToJumpApex;
         previousState = crouching;
-        recordedJump = false;
 
         if (collisionController.collisions.IsColliding(1))
         {
@@ -299,40 +293,21 @@ public class PlayerController : MonoBehaviour
         // Jump if on ground TODO: Jump zone (not nessasarily on ground)
 
         jumpGrace = ((Time.time - lastTimeCollided) <= jumpCollisionGrace) && !(collisionController.collisions.IsColliding(1)) && (velocity.y == 0);
-
-        //allow players to record jumpcalls - only do this if a jumpgrace wasn't used.
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            lastAttemptedJumpTime = Time.time;
-            recordedJump = false;
-        }
-        //create bool - true if jump was recorded, false otherwise
-        recordedJump = (Time.time - lastAttemptedJumpTime <= recordJumpTime);
-        //recordedJump = false;
-        //register a jumpcall during jumpgraces
-        if (Input.GetKeyDown(KeyCode.UpArrow) && jumpGrace && CanStandUp())
-        {
+        if (Input.GetKey(KeyCode.Space) && (collisionController.collisions.IsColliding(1) || jumpGrace) && CanStandUp())
             velocity.y = jumpVelocity;
-            lastAttemptedJumpTime = -1;
-            recordedJump = false;
-        }
+
         //cut off velocity a bit if you stop pressing jump
-        if (Input.GetKeyUp(KeyCode.UpArrow) && velocity.y > -unPressedVelocity)
+        if (Input.GetKeyUp(KeyCode.Space) && velocity.y > -unPressedVelocity)
         {
             velocity.y = unPressedVelocity;
-            lastAttemptedJumpTime = -1;
-            recordedJump = false;
         }
-
-        //If a jumpcall if true, record a jump
-        if (collisionController.collisions.IsColliding(1) && recordedJump && CanStandUp())
-        {
-            velocity.y = jumpVelocity;
-            recordedJump = false;
-        }
+<<<<<<< HEAD
 
         /*
         crouching = (Input.GetKey(KeyCode.DownArrow)) ? true : false;
+=======
+        crouching = (Input.GetKey(KeyCode.LeftControl)) ? true : false;
+>>>>>>> parent of d5e60c2... Player Controller Updates
         if (!crouching && previousState && !CanStandUp())
         {
             crouching = true;
@@ -391,6 +366,7 @@ public class PlayerController : MonoBehaviour
                 transform.localScale = normalScale;
                 transform.position += new Vector3(0, .5f, 0);
             }
+<<<<<<< HEAD
             
 
             //give a different air speed for longer jumps
@@ -410,6 +386,11 @@ public class PlayerController : MonoBehaviour
                 velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing,
                                              (collisionController.collisions.IsColliding(1)) ? accelerationTimeGrounded : accelerationTimeAirborne);
             }
+=======
+            float targetVelocityX = input.x * maximumMovementSpeed;
+            velocity.x = Mathf.SmoothDamp(velocity.x, targetVelocityX, ref velocityXSmoothing,
+                                         (collisionController.collisions.IsColliding(1)) ? accelerationTimeGrounded : accelerationTimeAirborne);
+>>>>>>> parent of d5e60c2... Player Controller Updates
             //Modify velocity according to gravity
             velocity.y += gravity * Time.deltaTime * (velocity.y < 0 ? gravityMultiplierDescending : gravityMultiplierAscending);
         }
