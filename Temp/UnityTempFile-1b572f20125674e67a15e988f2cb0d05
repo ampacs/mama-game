@@ -78,6 +78,7 @@
 -define:UNITY_EDITOR_64
 -define:UNITY_EDITOR_OSX
 -define:UNITY_TEAM_LICENSE
+'Assets/Checkpoint.cs'
 'Assets/Scripts/Controller2D.cs'
 'Assets/Scripts/EmergingEnemy.cs'
 'Assets/Scripts/EnemySpawn.cs'
