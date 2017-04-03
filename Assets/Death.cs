@@ -13,7 +13,7 @@ public class Death : MonoBehaviour {
 	void Update () {
 
 		if (transform.position.y < -20.0f)
-			GameObject.FindGameObjectWithTag ("Checkpoint").GetComponent<Checkpoint> ().RestartLevel ();
+			GameObject.FindGameObjectWithTag ("Checkpoint").GetComponent<Checkpoint> ().RestartLevel (); //this line of code should be called to restart
 		
 	}
 }
