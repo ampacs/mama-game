@@ -120,7 +120,7 @@ public class PlayerController : MonoBehaviour
             //push against wall to make raycasts register
             velocity.x = 2*clamberDir;
             //if your clambercollider hits something, you've moved down far enough to be centered
-            if (controller.clamberCollisions.right && controller.collisions.right || controller.collisions.left && controller.clamberCollisions.left)
+            if (controller.clamberCollisions.right && controller.collisions.right || controller.collisions.left && controller.clamberCollisions.left || controller.collisions.below)
             {
                 centered = true;
                 velocity.y = 0;

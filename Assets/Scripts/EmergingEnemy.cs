@@ -8,10 +8,14 @@ public class EmergingEnemy : MonoBehaviour {
 	private Rigidbody2D rb;
 	private BoxCollider2D coll;
 
+    public EnemySpawn spawner;
+
 	[HideInInspector] public string spawnDirection;
 	public float spawnSpeed;
 	public float targetScale;
 	private float spawnTime;
+    public bool startFacingRight;
+    private int initialDirection = 1;
 
 	private bool autonomous = false;
 
@@ -19,6 +23,8 @@ public class EmergingEnemy : MonoBehaviour {
     public float maxSpeed = 5;
 	public float targetGravity;
 	public bool canFly;
+
+    [HideInInspector] public bool dead = false;
 
 	// Use this for initialization
 	void Start () {
@@ -36,7 +42,11 @@ public class EmergingEnemy : MonoBehaviour {
         if (canFly)
             coll.isTrigger = true;
 
-		spawnTime = Time.time;
+
+        spawnTime = Time.time;
+
+        if (startFacingRight)
+            initialDirection = -1;
 	}
 	
 	// Update is called once per frame
@@ -85,9 +95,9 @@ public class EmergingEnemy : MonoBehaviour {
 			}
 
 			if (spawnDirection == "up" || spawnDirection == "down")
-				transform.localScale = new Vector3(targetScale, currScale, 1);
+				transform.localScale = new Vector3(targetScale * initialDirection, currScale, 1);
 			else if (spawnDirection == "left" || spawnDirection == "right")
-				transform.localScale = new Vector3(currScale, targetScale, 1);
+				transform.localScale = new Vector3(currScale * initialDirection, targetScale, 1);
 
 		}
 		
@@ -96,7 +106,8 @@ public class EmergingEnemy : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            SceneManager.LoadSceneAsync("tutorial");
+            spawner.alreadySpawned = false;
+            gameObject.active = false;
         }
     }
 }
