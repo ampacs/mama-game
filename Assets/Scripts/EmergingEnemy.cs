@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class EmergingEnemy : MonoBehaviour {
 
 	private Rigidbody2D rb;
-	private BoxCollider2D coll;
+	private PolygonCollider2D coll;
 
     public EnemySpawn spawner;
 
@@ -21,8 +21,12 @@ public class EmergingEnemy : MonoBehaviour {
 
 	public float moveSpeed;
     public float maxSpeed = 5;
+    private float lastPos;
 	public float targetGravity;
 	public bool canFly;
+    public float attackDistance;
+
+    private Animator anim;
 
     [HideInInspector] public bool dead = false;
 
@@ -30,7 +34,7 @@ public class EmergingEnemy : MonoBehaviour {
 	void Start () {
 
 		rb = GetComponent<Rigidbody2D> ();
-		coll = GetComponent<BoxCollider2D> ();
+		coll = GetComponent<PolygonCollider2D> ();
 
 		if (spawnDirection == "up" || spawnDirection == "down")
 			transform.localScale = new Vector3(targetScale, targetScale, 1);
@@ -47,6 +51,8 @@ public class EmergingEnemy : MonoBehaviour {
 
         if (startFacingRight)
             initialDirection = -1;
+        lastPos = transform.position.x;
+        anim = GetComponent<Animator>();
 	}
 	
 	// Update is called once per frame
@@ -64,14 +70,27 @@ public class EmergingEnemy : MonoBehaviour {
 				float xVelo = diff.x * (moveSpeed / d);
 				float yVelo = diff.y * (moveSpeed / d);
 				rb.velocity = new Vector2(xVelo, yVelo);
-			} else {
+                if (pcPos.x < pos.x)
+                {
+                    if (transform.localScale.x < 0)
+                        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                }
+                else if (pos.x < pcPos.x)
+                {
+                    if (transform.localScale.x > 0)
+                        transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                }
+            } else {
                 if (rb.velocity.y < .05 && Mathf.Abs(diff.y) < 1)
                 {
-                    if (pcPos.x < pos.x) {
+                    if (pcPos.x < pos.x)
+                    {
                         if (transform.localScale.x < 0)
                             transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                         rb.AddForce(new Vector2(-moveSpeed / Time.fixedDeltaTime, 0));
-                    } else if (pos.x < pcPos.x) {
+                    }
+                    else if (pos.x < pcPos.x)
+                    {
                         if (transform.localScale.x > 0)
                             transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                         rb.AddForce(new Vector2(moveSpeed / Time.fixedDeltaTime, 0));
@@ -80,7 +99,20 @@ public class EmergingEnemy : MonoBehaviour {
                         rb.velocity = new Vector2(maxSpeed, rb.velocity.y);
                     else if (rb.velocity.x < -maxSpeed)
                         rb.velocity = new Vector2(-maxSpeed, rb.velocity.y);
+                    if (Mathf.Abs(pcPos.x - transform.position.x) <= attackDistance)
+                        anim.SetBool("Attack", true);
+                    else
+                        anim.SetBool("Attack", false);
                 }
+                if (Mathf.Abs(pcPos.x - transform.position.x) <= attackDistance && Mathf.Abs(diff.y) < 1)
+                    anim.SetBool("Attack", true);
+                else
+                    anim.SetBool("Attack", false);
+                if (Mathf.Abs(lastPos - transform.position.x) / Time.fixedDeltaTime >= .5)
+                    anim.SetBool("Chasing", true);
+                else
+                    anim.SetBool("Chasing", false);
+                lastPos = transform.position.x;
 			}
 
 		} else {

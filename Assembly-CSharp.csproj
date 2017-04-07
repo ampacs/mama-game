@@ -52,6 +52,7 @@
      <Compile Include="Assets\Scripts\CollisionControllerEB.cs" />
      <Compile Include="Assets\Scripts\EmergingEnemy.cs" />
      <Compile Include="Assets\Scripts\EnemySpawn.cs" />
+     <Compile Include="Assets\Scripts\Face Direction.cs" />
      <Compile Include="Assets\Scripts\FallSensor.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\LevelLoader.cs" />
