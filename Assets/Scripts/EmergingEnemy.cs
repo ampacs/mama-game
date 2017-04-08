@@ -25,6 +25,7 @@ public class EmergingEnemy : MonoBehaviour {
 	public float targetGravity;
 	public bool canFly;
     public float attackDistance;
+    private bool inBarrier = false;
 
     private Animator anim;
 
@@ -80,6 +81,8 @@ public class EmergingEnemy : MonoBehaviour {
                     if (transform.localScale.x > 0)
                         transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
                 }
+                if (inBarrier && xVelo > 0)
+                    rb.velocity = new Vector2(0, yVelo);
             } else {
                 if (rb.velocity.y < .05 && Mathf.Abs(diff.y) < 1)
                 {
@@ -140,6 +143,17 @@ public class EmergingEnemy : MonoBehaviour {
         {
             spawner.alreadySpawned = false;
             gameObject.active = false;
+        }
+        if (other.gameObject.CompareTag("Stop") && canFly)
+        {
+            inBarrier = true;
+        }
+    }
+    void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Stop") && canFly)
+        {
+            inBarrier = false;
         }
     }
 }

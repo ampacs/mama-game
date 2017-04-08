@@ -54,6 +54,7 @@
      <Compile Include="Assets\Scripts\EnemySpawn.cs" />
      <Compile Include="Assets\Scripts\Face Direction.cs" />
      <Compile Include="Assets\Scripts\FallSensor.cs" />
+     <Compile Include="Assets\Scripts\Follow Player.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\LevelLoader.cs" />
      <Compile Include="Assets\Scripts\MatthewsPlayer.cs.cs" />
