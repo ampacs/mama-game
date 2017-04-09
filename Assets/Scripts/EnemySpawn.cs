@@ -42,15 +42,16 @@ public class EnemySpawn : MonoBehaviour {
 				
 				GameObject spawnedEnemy = Instantiate (enemy, spawnPoint, Quaternion.identity);
 				EmergingEnemy enemyScript = spawnedEnemy.GetComponent<EmergingEnemy> ();
-				enemyScript.spawnDirection = spawnDirection;
-				enemyScript.moveSpeed = enemySpeed;
-                enemyScript.maxSpeed = enemyMaxSpeed;
-				//enemyScript.targetScale = enemySize;
-				enemyScript.targetGravity = enemyGravity;
-				enemyScript.canFly = enemyCanfly;
-                enemyScript.spawnSpeed = spawnTime;
-				alreadySpawned = true;
-
+                if (enemyScript != null) {
+                    enemyScript.spawnDirection = spawnDirection;
+                    enemyScript.moveSpeed = enemySpeed;
+                    enemyScript.maxSpeed = enemyMaxSpeed;
+                    //enemyScript.targetScale = enemySize;
+                    enemyScript.targetGravity = enemyGravity;
+                    enemyScript.canFly = enemyCanfly;
+                    enemyScript.spawnSpeed = spawnTime;
+                    alreadySpawned = true;
+                }
 			}
 
 		}

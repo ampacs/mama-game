@@ -34,11 +34,12 @@ public class PlayerController : MonoBehaviour
     float gravity;
     float jumpVelocity;
     float velocityXSmoothing;
-    Vector2 direction;
+    public Vector2 direction { get; private set; }
     Vector3 velocity,
             velocityAdjusted,
             size;
     Vector3[] clamberingPositions;
+    SpriteRenderer spriteRenderer;
 
 
 
@@ -55,6 +56,7 @@ public class PlayerController : MonoBehaviour
         currentClamberingPosition = 0;
         directionOfClamberableLedge = 0;
         collisionController = this.GetComponent<CollisionController>();
+        spriteRenderer = this.GetComponent<SpriteRenderer>();
         size = GetComponent<BoxCollider2D>().size;
         clamberingPositions = new Vector3[2];
     }
@@ -100,7 +102,10 @@ public class PlayerController : MonoBehaviour
         }
 
         if (input.x != 0)
-            direction.x = input.x;
+            direction = new Vector3(input.x, 0, 0);
+
+        UpdateSpriteDirection();
+
         if (!clambering)
         {
             directionOfClamberableLedge = CheckClamberableLedge();
@@ -228,5 +233,9 @@ public class PlayerController : MonoBehaviour
     public Vector3 GetPlayerTimeAdjustedVelocity()
     {
         return velocityAdjusted;
+    }
+
+    void UpdateSpriteDirection() {
+        spriteRenderer.flipX = direction.x > 0 ? true : false;
     }
 }
