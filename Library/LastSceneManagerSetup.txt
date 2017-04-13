@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/Newborn.unity
+- path: Assets/Scenes/Toddler.unity
   isLoaded: 1
   isActive: 1

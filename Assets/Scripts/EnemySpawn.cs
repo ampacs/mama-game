@@ -5,7 +5,6 @@ using UnityEngine;
 public class EnemySpawn : MonoBehaviour {
 
 	//if true, only one enemy will spawn here
-	//if false, an enemy will spawn every time the player enters the target zone
 	public bool spawnOnce;
 
 	//the direction that the enemy will grow in
@@ -16,7 +15,8 @@ public class EnemySpawn : MonoBehaviour {
 
 	[HideInInspector] public bool alreadySpawned;
     private bool doneSpawning;
-	public float spawnTime;
+	public float spawnSpeed;
+    public float respawnLag;
     public Vector2 spawnPoint;
 
 	public float enemySpeed;
@@ -52,7 +52,8 @@ public class EnemySpawn : MonoBehaviour {
 				//enemyScript.targetScale = enemySize;
 				enemyScript.targetGravity = enemyGravity;
 				enemyScript.canFly = enemyCanfly;
-                enemyScript.spawnSpeed = spawnTime;
+                enemyScript.spawnSpeed = spawnSpeed;
+                enemyScript.respawnLag = respawnLag;
 				alreadySpawned = true;
                 if (spawnOnce)
                     doneSpawning = true;

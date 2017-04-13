@@ -7,11 +7,13 @@ public class EmergingEnemy : MonoBehaviour {
 
 	private Rigidbody2D rb;
 	private PolygonCollider2D coll;
+    private SpriteRenderer sp;
 
     public EnemySpawn spawner;
 
 	[HideInInspector] public string spawnDirection;
 	public float spawnSpeed;
+    public float respawnLag;
 	public float targetScale;
 	private float spawnTime;
     public bool startFacingRight;
@@ -29,13 +31,12 @@ public class EmergingEnemy : MonoBehaviour {
 
     private Animator anim;
 
-    [HideInInspector] public bool dead = false;
-
 	// Use this for initialization
 	void Start () {
 
-		rb = GetComponent<Rigidbody2D> ();
-		coll = GetComponent<PolygonCollider2D> ();
+		rb = GetComponent<Rigidbody2D>();
+		coll = GetComponent<PolygonCollider2D>();
+        sp = GetComponent<SpriteRenderer>();
 
 		if (spawnDirection == "up" || spawnDirection == "down")
 			transform.localScale = new Vector3(targetScale, targetScale, 1);
@@ -111,7 +112,7 @@ public class EmergingEnemy : MonoBehaviour {
                     anim.SetBool("Attack", true);
                 else
                     anim.SetBool("Attack", false);
-                if (Mathf.Abs(lastPos - transform.position.x) / Time.fixedDeltaTime >= .5)
+                if (Mathf.Abs(lastPos - transform.position.x) / Time.fixedDeltaTime >= .4)
                     anim.SetBool("Chasing", true);
                 else
                     anim.SetBool("Chasing", false);
@@ -141,13 +142,20 @@ public class EmergingEnemy : MonoBehaviour {
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            spawner.alreadySpawned = false;
-            gameObject.active = false;
+            StartCoroutine(Death());
         }
         if (other.gameObject.CompareTag("Stop") && canFly)
         {
             inBarrier = true;
         }
+    }
+
+    IEnumerator Death()
+    {
+        sp.enabled = false;
+        yield return new WaitForSeconds(respawnLag);
+        spawner.alreadySpawned = false;
+        gameObject.SetActive(false);
     }
     void OnTriggerExit2D(Collider2D other)
     {

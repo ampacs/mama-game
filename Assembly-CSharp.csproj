@@ -48,16 +48,17 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\AudioManager.cs" />
      <Compile Include="Assets\Scripts\CameraController.cs" />
+     <Compile Include="Assets\Scripts\Checkpoint.cs" />
      <Compile Include="Assets\Scripts\CollisionController.cs" />
      <Compile Include="Assets\Scripts\CollisionControllerEB.cs" />
      <Compile Include="Assets\Scripts\EmergingEnemy.cs" />
      <Compile Include="Assets\Scripts\EnemySpawn.cs" />
-     <Compile Include="Assets\Scripts\Face Direction.cs" />
-     <Compile Include="Assets\Scripts\FallSensor.cs" />
-     <Compile Include="Assets\Scripts\Follow Player.cs" />
+     <Compile Include="Assets\Scripts\FallDeath.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\LevelLoader.cs" />
-     <Compile Include="Assets\Scripts\MatthewsPlayer.cs.cs" />
+     <Compile Include="Assets\Scripts\MAMAController.cs" />
+     <Compile Include="Assets\Scripts\MAMATrigger.cs" />
+     <Compile Include="Assets\Scripts\NoiseTrigger.cs" />
      <Compile Include="Assets\Scripts\Parallax.cs" />
      <Compile Include="Assets\Scripts\PlayerController.cs" />
  <Reference Include="UnityEngine.UI">
